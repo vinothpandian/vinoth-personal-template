@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --env-file=../../.env --bun vite dev --port 3000",
+    "dev": "bun --env-file=../../.env --bun vite dev --port 3000 --host 127.0.0.1",
     "build": "vite build",
     "start": "node .output/server/index.mjs",
     "generate-routes": "tsr generate",
