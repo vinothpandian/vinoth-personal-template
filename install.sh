@@ -22,13 +22,13 @@ BIN_DIR="/usr/local/bin"
 [ -w "$BIN_DIR" ] || BIN_DIR="$HOME/.local/bin"
 mkdir -p "$BIN_DIR"
 
-echo "Downloading pt-cli → $BIN_DIR/pt-cli"
+echo "Downloading pt-cli -> $BIN_DIR/pt-cli"
 curl -fSL "$URL" -o "$BIN_DIR/pt-cli"
 chmod +x "$BIN_DIR/pt-cli"
 
 case ":$PATH:" in
   *":$BIN_DIR:"*) ;;
-  *) echo "NOTE: $BIN_DIR is not on your PATH — add it." ;;
+  *) echo "NOTE: $BIN_DIR is not on your PATH - add it." ;;
 esac
 
 # --- env vars ----------------------------------------------------------------
@@ -50,7 +50,7 @@ ask() { # ask VAR "prompt" [-s]
 set_export() { # set_export KEY VALUE
   local key=$1 val=$2
   if grep -q "^export $key=" "$RC"; then
-    echo "$key already set in $RC — leaving it. Edit $RC to change."
+    echo "$key already set in $RC - leaving it. Edit $RC to change."
   else
     printf "export %s='%s'\n" "$key" "$val" >> "$RC"
     echo "Added $key to $RC"
