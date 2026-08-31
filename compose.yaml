@@ -1,0 +1,22 @@
+# Local Postgres for development. Credentials match .env.example's DATABASE_URL
+# (user "vinoth", trust auth, db "personal_template"). Prod uses a real shared
+# server — see README "Shared Postgres, table separation".
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: vinoth
+      POSTGRES_DB: personal_template
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vinoth -d personal_template"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:

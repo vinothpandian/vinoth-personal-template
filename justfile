@@ -12,10 +12,17 @@ default:
 install:
     @bun install
 
-# create the local database and apply migrations (first-time setup)
-setup: install
-    createdb -h 127.0.0.1 personal_template || true
+# start local Postgres, apply migrations (first-time setup)
+setup: install db-up
     just migrate
+
+# start local Postgres (Docker) and wait until it accepts connections
+db-up:
+    docker compose up -d --wait db
+
+# stop local Postgres (keeps the data volume)
+db-down:
+    docker compose down
 
 # --- develop -----------------------------------------------------------------
 
@@ -43,9 +50,9 @@ generate:
 migrate:
     @cd packages/db && bunx drizzle-kit migrate
 
-# open a psql shell on this app's database
+# open a psql shell on the local Docker database
 psql:
-    psql "$DATABASE_URL"
+    docker compose exec db psql -U vinoth -d personal_template
 
 # --- quality -----------------------------------------------------------------
 

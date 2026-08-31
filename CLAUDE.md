@@ -6,6 +6,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 For ANY coding task (writing, adding, refactoring, fixing, reviewing, or designing code), invoke the `ponytail` skill first and follow it. If the Skill tool doesn't list it, read `.agents/skills/ponytail/SKILL.md` (`.claude/skills/` symlinks there). Gist: the laziest solution that actually works — YAGNI → reuse what's in the codebase → stdlib → native platform feature → already-installed dependency → minimal code. Sibling skills exist for specific jobs: `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain` (managed via `skills-lock.json`).
 
+## Docs — always pull llms.txt first
+
+Before writing or changing code that touches one of these deps, `WebFetch` its
+`llms.txt` and follow the current docs — do not rely on memory, versions move.
+
+| Dep | llms.txt |
+| --- | --- |
+| Bun | https://bun.sh/llms.txt |
+| TanStack (Start / Router) | https://tanstack.com/llms.txt |
+| Nitro | https://nitro.build/llms.txt |
+| Vite | https://vite.dev/llms.txt |
+| React | https://react.dev/llms.txt |
+| Chakra UI v3 | https://chakra-ui.com/llms.txt |
+| Better Auth | https://www.better-auth.com/llms.txt |
+| oRPC | https://orpc.unnoq.com/llms.txt |
+| Drizzle ORM | https://orm.drizzle.team/llms.txt |
+| Zod | https://zod.dev/llms.txt |
+
+Biome and OpenTUI publish no `llms.txt` — use their sites directly.
+
 ## Commands
 
 Prefer `just` — it loads `.env` automatically, so db/cli recipes need no manual exports. `just` alone lists all recipes.

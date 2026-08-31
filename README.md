@@ -35,16 +35,20 @@ To reuse this template for a new app: change `TABLE_PREFIX` in `packages/db/src/
 
 ## Local setup
 
-1. Install [Bun](https://bun.sh) and have Postgres running locally (e.g. Postgres.app).
+`./bootstrap.sh` (Ubuntu or macOS) checks that `bun`, `just`, `gh`, and `docker` are installed (stops if any is missing), runs `bun install`, starts local Postgres via Docker, and turns on branch protection (CI must pass before a PR to main merges). Then `cp .env.example .env`, `just migrate`, `just dev`.
+
+Manual path:
+
+1. Install [Bun](https://bun.sh) and have Docker running.
 2. `bun install`
-3. Create the database and env file:
+3. Start Postgres and create the env file:
 
    ```sh
-   createdb -h 127.0.0.1 personal_template
-   cp .env.example .env   # then fill in real values
+   just db-up                # docker compose up -d --wait db
+   cp .env.example .env      # then fill in real values
    ```
 
-   Use `127.0.0.1` in `DATABASE_URL`, not `localhost` — Postgres.app rejects IPv6 (`::1`) connections unless you confirm a macOS permission dialog.
+   The Docker Postgres matches `.env.example`'s `DATABASE_URL` out of the box (user `vinoth`, db `personal_template`, port `127.0.0.1:5432`). Use `127.0.0.1`, not `localhost`, in the URL.
 
 4. Run migrations: `bun run db:migrate`
 5. Start the app: `bun run dev` → http://localhost:3000
@@ -118,7 +122,17 @@ Then add the production callback URL to the Pocket ID client: `https://app.examp
 
 ### CLI on a remote machine
 
-The CLI compiles to a single self-contained binary (no bun/node needed on the target):
+The CLI compiles to a single self-contained binary (no bun/node needed on the target).
+
+**Quick install (Linux x64):** CI publishes the binary as a GitHub release asset on every `v*` tag. On the target machine:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/vinothpandian/vinoth-personal-template/main/install.sh | bash
+```
+
+It downloads `pt-cli` to `/usr/local/bin` (or `~/.local/bin`), prompts for `API_URL` and `WORKER_TOKEN`, and appends them as exports to `~/.zshenv` or `~/.bashrc`. Pre-set those env vars to skip the prompts.
+
+**Build it yourself:**
 
 ```sh
 just build-cli          # for this machine's OS/arch → dist/pt-cli
