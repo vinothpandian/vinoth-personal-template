@@ -43,6 +43,20 @@ export function isAllowedSubject(
 }
 
 /**
+ * Dev-only auth bypass for cloud agents that need to implement and test
+ * against the app without a Pocket ID session. True only when
+ * AUTH_DEV_BYPASS is exactly "1" AND NODE_ENV is not "production" — the
+ * double gate keeps a stray env var in a deployed environment from
+ * silently disabling the single-user restriction.
+ */
+export function isAuthBypass(env: {
+  AUTH_DEV_BYPASS?: string | null
+  NODE_ENV?: string | null
+}): boolean {
+  return env.AUTH_DEV_BYPASS === '1' && env.NODE_ENV !== 'production'
+}
+
+/**
  * Constant-time comparison for static bearer tokens. Rejects empty
  * expected tokens so an unset WORKER_TOKEN can never authenticate.
  */

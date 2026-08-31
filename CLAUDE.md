@@ -33,6 +33,8 @@ Both clients (web + CLI) call the same procedures through this contract. Clients
 
 **Single-user, fail closed.** Only `ALLOWED_EMAIL`/`ALLOWED_SUBJECT` can sign in (`apps/web/src/server/auth.ts`); with neither set, nobody can. No registration or user management — by design.
 
+**Dev auth bypass.** Set `AUTH_DEV_BYPASS=1` (in `.env`) to skip Pocket ID: every route guard and RPC sees a mock signed-in user (`isAuthBypass` in `packages/domain`). Gated off when `NODE_ENV=production`. Use it for implementing/testing behind the auth wall; `just verify` will fail while it's on.
+
 **Shared Postgres, prefixed tables.** One Postgres server shared by multiple apps. Every table is prefixed `personal_template_` via `pgTableCreator` (`packages/db/src/schema.ts`), and `drizzle.config.ts` scopes `tablesFilter` + the migration journal so drizzle-kit never touches other apps' tables. Reusing the template = change `TABLE_PREFIX` + `tablesFilter` + `migrations.table`, delete `packages/db/migrations/`, regenerate. Use `127.0.0.1`, not `localhost`, in `DATABASE_URL`.
 
 **Pure logic lives in `packages/domain`** (identity gate, constant-time token comparison) — the only tested package; put new pure helpers and their tests there.

@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
+import { isAuthBypass } from '@template/domain'
 import { auth } from './auth'
 
 export interface SessionUser {
@@ -13,6 +14,9 @@ export interface SessionUser {
  */
 export const getSessionUser = createServerFn({ method: 'GET' }).handler(
   async (): Promise<SessionUser | null> => {
+    if (isAuthBypass(process.env)) {
+      return { name: 'Dev Bypass', email: 'dev@localhost' }
+    }
     const request = getRequest()
     const session = await auth.api.getSession({ headers: request.headers })
     if (!session) return null

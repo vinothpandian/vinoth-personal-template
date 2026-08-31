@@ -3,6 +3,7 @@ import {
   hasIdentityRestriction,
   isAllowedEmail,
   isAllowedSubject,
+  isAuthBypass,
   isValidWorkerToken,
 } from './index'
 
@@ -48,6 +49,31 @@ describe('isAllowedSubject', () => {
   test('passes when no subject constraint configured', () => {
     expect(isAllowedSubject('anything', '')).toBe(true)
     expect(isAllowedSubject(null, undefined)).toBe(true)
+  })
+})
+
+describe('isAuthBypass', () => {
+  test('true only with AUTH_DEV_BYPASS="1" outside production', () => {
+    expect(
+      isAuthBypass({ AUTH_DEV_BYPASS: '1', NODE_ENV: 'development' }),
+    ).toBe(true)
+    expect(isAuthBypass({ AUTH_DEV_BYPASS: '1', NODE_ENV: 'test' })).toBe(true)
+  })
+
+  test('false in production even with the flag set', () => {
+    expect(isAuthBypass({ AUTH_DEV_BYPASS: '1', NODE_ENV: 'production' })).toBe(
+      false,
+    )
+  })
+
+  test('false without the exact flag value', () => {
+    expect(isAuthBypass({ NODE_ENV: 'development' })).toBe(false)
+    expect(
+      isAuthBypass({ AUTH_DEV_BYPASS: 'true', NODE_ENV: 'development' }),
+    ).toBe(false)
+    expect(
+      isAuthBypass({ AUTH_DEV_BYPASS: '0', NODE_ENV: 'development' }),
+    ).toBe(false)
   })
 })
 
