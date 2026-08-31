@@ -1,6 +1,6 @@
 # Local Postgres for development. Credentials match .env.example's DATABASE_URL
 # (user "vinoth", trust auth, db "personal_template"). Prod uses a real shared
-# server — see README "Shared Postgres, table separation".
+# server - see README "Shared Postgres, table separation".
 services:
   db:
     image: postgres:17
