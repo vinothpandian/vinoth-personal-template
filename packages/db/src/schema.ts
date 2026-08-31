@@ -1,5 +1,11 @@
 import { relations } from 'drizzle-orm'
-import { boolean, index, pgTableCreator, text, timestamp } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  index,
+  pgTableCreator,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core'
 
 /**
  * All apps share one Postgres database. Every table (and index) this app
@@ -83,7 +89,9 @@ export const verification = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index(`${TABLE_PREFIX}verification_identifier_idx`).on(table.identifier)],
+  (table) => [
+    index(`${TABLE_PREFIX}verification_identifier_idx`).on(table.identifier),
+  ],
 )
 
 export const userRelations = relations(user, ({ many }) => ({

@@ -10,8 +10,8 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
 import type { HealthStatus } from '@template/contracts'
+import { useCallback, useEffect, useState } from 'react'
 import { authClient } from '../lib/auth-client'
 import { api } from '../lib/orpc-client'
 import { getSessionUser } from '../server/functions'
@@ -86,7 +86,9 @@ function HomePage() {
                 <Stack gap="2">
                   <Flex gap="2" align="center">
                     <Badge colorPalette="green">status: {health.status}</Badge>
-                    <Badge colorPalette={health.database === 'ok' ? 'green' : 'red'}>
+                    <Badge
+                      colorPalette={health.database === 'ok' ? 'green' : 'red'}
+                    >
                       database: {health.database}
                     </Badge>
                     <Badge>as: {health.authenticatedAs}</Badge>

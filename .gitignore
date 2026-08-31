@@ -24,3 +24,6 @@ build/
 # logs and OS noise
 *.log
 .DS_Store
+
+# generated route tree
+routeTree.gen.ts

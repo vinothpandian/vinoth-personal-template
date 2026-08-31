@@ -1,4 +1,4 @@
-import { ORPCError, implement } from '@orpc/server'
+import { implement, ORPCError } from '@orpc/server'
 import { contract } from '@template/contracts'
 import { appMeta, getDb } from '@template/db'
 import { isValidWorkerToken } from '@template/domain'
@@ -26,7 +26,9 @@ const requireAuth = os.middleware(async ({ context, next }) => {
 
 async function resolvePrincipal(request: Request): Promise<Principal | null> {
   const header = request.headers.get('authorization')
-  const bearer = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : null
+  const bearer = header?.startsWith('Bearer ')
+    ? header.slice('Bearer '.length)
+    : null
   if (isValidWorkerToken(bearer, process.env.WORKER_TOKEN)) {
     return { kind: 'worker' }
   }

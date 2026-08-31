@@ -1,5 +1,5 @@
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 
 export const Route = createRootRoute({
   head: () => ({
