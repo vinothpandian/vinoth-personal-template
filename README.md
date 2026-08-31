@@ -47,13 +47,13 @@ To reuse this template for a new app: change `TABLE_PREFIX` in `packages/db/src/
    Use `127.0.0.1` in `DATABASE_URL`, not `localhost` — Postgres.app rejects IPv6 (`::1`) connections unless you confirm a macOS permission dialog.
 
 4. Run migrations: `bun run db:migrate`
-5. Start the app: `bun run dev` → http://127.0.0.1:3000
+5. Start the app: `bun run dev` → http://localhost:3000
 
 ### Pocket ID configuration
 
 In your Pocket ID admin, create an OIDC client:
 
-- **Callback URL**: `http://127.0.0.1:3000/api/auth/callback/pocket-id` (adjust host for production; the provider id `pocket-id` is set in `apps/web/src/server/auth.ts`)
+- **Callback URL**: `http://localhost:3000/api/auth/callback/pocket-id` (adjust host for production; the provider id `pocket-id` is set in `apps/web/src/server/auth.ts`)
 - Copy the client ID/secret into `.env`, and set `POCKET_ID_ISSUER_URL` to your Pocket ID base URL.
 
 Only the identity in `ALLOWED_EMAIL` / `ALLOWED_SUBJECT` can ever sign in; user creation is blocked for everyone else, and with neither set nobody can sign in (fail closed). There is no registration, password login, or user management — by design.
@@ -107,10 +107,10 @@ bun run src/index.ts tui      # interactive OpenTUI view (r refresh, q quit)
 With the dev server running:
 
 ```sh
-curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://127.0.0.1:3000/
-# 307 http://127.0.0.1:3000/login          (unauthenticated → login)
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://localhost:3000/
+# 307 http://localhost:3000/login          (unauthenticated → login)
 
-curl -s -X POST http://127.0.0.1:3000/api/rpc/health/check \
+curl -s -X POST http://localhost:3000/api/rpc/health/check \
   -H 'content-type: application/json' -d '{}'
 # {"json":{...,"code":"UNAUTHORIZED","status":401,...}}   (no token → 401)
 

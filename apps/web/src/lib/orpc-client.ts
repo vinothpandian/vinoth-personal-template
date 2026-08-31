@@ -7,7 +7,7 @@ import type { contract } from '@template/contracts'
 const link = new RPCLink({
   url: () =>
     typeof window === 'undefined'
-      ? 'http://127.0.0.1:3000/api/rpc'
+      ? 'http://localhost:3000/api/rpc'
       : `${window.location.origin}/api/rpc`,
 })
 
