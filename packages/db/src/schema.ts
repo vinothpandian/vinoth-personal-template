@@ -5,6 +5,7 @@ import {
   pgTableCreator,
   text,
   timestamp,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 
 /**
@@ -56,6 +57,9 @@ export const account = pgTable(
   'account',
   {
     id: text('id').primaryKey(),
+    // OIDC issuer of the linked account; better-auth 1.7 keys accounts on
+    // (issuer, accountId).
+    issuer: text('issuer').notNull(),
     accountId: text('account_id').notNull(),
     providerId: text('provider_id').notNull(),
     userId: text('user_id')
@@ -73,7 +77,13 @@ export const account = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index(`${TABLE_PREFIX}account_user_id_idx`).on(table.userId)],
+  (table) => [
+    index(`${TABLE_PREFIX}account_user_id_idx`).on(table.userId),
+    uniqueIndex(`${TABLE_PREFIX}account_issuer_account_id_idx`).on(
+      table.issuer,
+      table.accountId,
+    ),
+  ],
 )
 
 export const verification = pgTable(

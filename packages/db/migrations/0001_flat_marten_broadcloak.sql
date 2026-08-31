@@ -1,0 +1,2 @@
+ALTER TABLE "personal_template_account" ADD COLUMN "issuer" text NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "personal_template_account_issuer_account_id_idx" ON "personal_template_account" USING btree ("issuer","account_id");
