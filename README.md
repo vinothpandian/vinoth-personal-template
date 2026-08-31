@@ -106,6 +106,32 @@ bun run src/index.ts status   # one-shot health check, prints JSON
 bun run src/index.ts tui      # interactive OpenTUI view (r refresh, q quit)
 ```
 
+## Deployment
+
+### Web app on Coolify
+
+The root `Dockerfile` is Coolify-ready: create an Application from this repo with the Dockerfile build pack, port `3000`. The container applies pending migrations on boot, then serves.
+
+Set these env vars in Coolify (same names as `.env.example`): `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (your public URL, e.g. `https://app.example.com`), `POCKET_ID_ISSUER_URL`, `POCKET_ID_CLIENT_ID`, `POCKET_ID_CLIENT_SECRET`, `ALLOWED_EMAIL`/`ALLOWED_SUBJECT`, `WORKER_TOKEN`.
+
+Then add the production callback URL to the Pocket ID client: `https://app.example.com/api/auth/callback/pocket-id`.
+
+### CLI on a remote machine
+
+The CLI compiles to a single self-contained binary (no bun/node needed on the target):
+
+```sh
+just build-cli          # for this machine's OS/arch → dist/pt-cli
+just build-cli-linux    # for a Linux server (via Docker) → dist/linux/pt-cli
+```
+
+Copy the binary over and run it with two env vars:
+
+```sh
+scp dist/linux/pt-cli server:/usr/local/bin/pt-cli
+ssh server 'API_URL=https://app.example.com WORKER_TOKEN=<token> pt-cli status'
+```
+
 ## Verification
 
 With the dev server running:

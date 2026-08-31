@@ -27,3 +27,6 @@ build/
 
 # generated route tree
 routeTree.gen.ts
+
+# compiled binaries
+dist/

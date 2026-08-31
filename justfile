@@ -69,6 +69,23 @@ fix:
 build:
     @bun run build
 
+# --- production --------------------------------------------------------------
+
+# compile the CLI to a standalone binary for THIS machine → dist/pt-cli
+build-cli:
+    @mkdir -p dist
+    @cd apps/cli && bun build --compile src/index.ts --outfile ../../dist/pt-cli
+    @echo "dist/pt-cli — copy to a machine of the same OS/arch; needs API_URL and WORKER_TOKEN env vars"
+
+# compile the CLI for a Linux server via Docker → dist/linux/pt-cli
+build-cli-linux:
+    docker build --target=cli --output=dist/linux .
+    @echo "dist/linux/pt-cli — copy to the server; needs API_URL and WORKER_TOKEN env vars"
+
+# build the web app Docker image (what Coolify builds from the repo)
+docker-build:
+    docker build -t personal-template .
+
 # typecheck + lint + test + build
 check: typecheck lint test build
 
