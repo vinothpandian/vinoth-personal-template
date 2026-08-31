@@ -47,6 +47,11 @@ export const auth = betterAuth({
             })
           }
           if (!isAllowedEmail(user.email, allowed.email)) {
+            // Single-user app: log the rejected identity so a mismatch
+            // between the IdP email and ALLOWED_EMAIL is easy to spot.
+            console.warn(
+              `Blocked sign-in: email "${user.email}" does not match ALLOWED_EMAIL`,
+            )
             throw new APIError('FORBIDDEN', {
               message: 'This identity is not allowed to sign in',
             })
@@ -59,6 +64,9 @@ export const auth = betterAuth({
       create: {
         before: async (account) => {
           if (!isAllowedSubject(account.accountId, allowed.subject)) {
+            console.warn(
+              `Blocked sign-in: subject "${account.accountId}" does not match ALLOWED_SUBJECT`,
+            )
             throw new APIError('FORBIDDEN', {
               message: 'This identity is not allowed to sign in',
             })
