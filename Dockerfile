@@ -18,7 +18,15 @@ RUN cd apps/web && bun run build
 RUN cd packages/db && bun build --compile src/migrate.ts --outfile /out/migrate
 RUN cd apps/cli && bun build --compile src/index.ts --outfile /out/pt-cli
 
-# --- web app runtime (default target) ---------------------------------------
+# --- CLI binary export target ----------------------------------------------
+# Kept ahead of `web` on purpose: `web` must be the LAST stage so a bare
+# `docker build` (Coolify) defaults to it. Extract the CLI with an explicit
+# `--target=cli` (see `just build-cli-linux`).
+
+FROM scratch AS cli
+COPY --from=builder /out/pt-cli /pt-cli
+
+# --- web app runtime (default target) -------------------------------------
 
 FROM oven/bun:1.3-slim AS web
 WORKDIR /app
@@ -32,8 +40,3 @@ COPY --from=builder /out/migrate ./migrate
 EXPOSE 3000
 # Apply pending migrations, then serve. PORT is respected by nitro.
 CMD ["sh", "-c", "./migrate && exec bun .output/server/index.mjs"]
-
-# --- CLI binary export target ------------------------------------------------
-
-FROM scratch AS cli
-COPY --from=builder /out/pt-cli /pt-cli
