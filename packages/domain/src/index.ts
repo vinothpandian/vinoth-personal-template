@@ -1,21 +1,45 @@
 import { timingSafeEqual } from 'node:crypto'
 
+export interface AllowedIdentity {
+  email?: string | null
+  subject?: string | null
+}
+
 /**
- * Single-user gate: an identity is allowed if it matches the configured
- * email or OIDC subject. Empty/unset config values never match anything,
- * so with no configuration nobody can sign in (fail closed).
+ * True when at least one identity constraint (email or subject) is
+ * configured. With no constraints configured nobody may sign in
+ * (fail closed) — the auth layer must reject sign-in when this is false.
  */
-export function isAllowedIdentity(
-  identity: { email?: string | null; subject?: string | null },
-  allowed: { email?: string | null; subject?: string | null },
+export function hasIdentityRestriction(allowed: AllowedIdentity): boolean {
+  return !!allowed.email?.trim() || !!allowed.subject?.trim()
+}
+
+/**
+ * Email gate: passes when no email constraint is configured, or when the
+ * email matches it case-insensitively. A configured constraint with a
+ * missing email fails.
+ */
+export function isAllowedEmail(
+  email: string | null | undefined,
+  allowedEmail: string | null | undefined,
 ): boolean {
-  const emailAllowed =
-    !!allowed.email &&
-    !!identity.email &&
-    identity.email.toLowerCase() === allowed.email.toLowerCase()
-  const subjectAllowed =
-    !!allowed.subject && !!identity.subject && identity.subject === allowed.subject
-  return emailAllowed || subjectAllowed
+  const allowed = allowedEmail?.trim()
+  if (!allowed) return true
+  return !!email && email.toLowerCase() === allowed.toLowerCase()
+}
+
+/**
+ * OIDC subject gate: passes when no subject constraint is configured, or
+ * when the subject matches it exactly. A configured constraint with a
+ * missing subject fails.
+ */
+export function isAllowedSubject(
+  subject: string | null | undefined,
+  allowedSubject: string | null | undefined,
+): boolean {
+  const allowed = allowedSubject?.trim()
+  if (!allowed) return true
+  return !!subject && subject === allowed
 }
 
 /**

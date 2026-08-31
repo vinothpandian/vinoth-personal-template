@@ -1,12 +1,21 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import * as schema from './schema'
 
-function requireDatabaseUrl(): string {
+export type Db = ReturnType<typeof createDb>
+
+function createDb() {
   const url = process.env.DATABASE_URL
   if (!url) throw new Error('DATABASE_URL is not set')
-  return url
+  return drizzle(url, { schema })
 }
 
-export const db = drizzle(requireDatabaseUrl(), { schema })
+let instance: Db | undefined
 
-export type Db = typeof db
+/**
+ * Lazy singleton so importing this package (e.g. during a production
+ * build) never requires a database connection.
+ */
+export function getDb(): Db {
+  instance ??= createDb()
+  return instance
+}

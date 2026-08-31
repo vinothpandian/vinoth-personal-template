@@ -1,38 +1,53 @@
 import { describe, expect, test } from 'bun:test'
-import { isAllowedIdentity, isValidWorkerToken } from './index'
+import {
+  hasIdentityRestriction,
+  isAllowedEmail,
+  isAllowedSubject,
+  isValidWorkerToken,
+} from './index'
 
-describe('isAllowedIdentity', () => {
-  test('matches allowed email case-insensitively', () => {
-    expect(
-      isAllowedIdentity({ email: 'Me@Example.com' }, { email: 'me@example.com' }),
-    ).toBe(true)
+describe('hasIdentityRestriction', () => {
+  test('true when email or subject is configured', () => {
+    expect(hasIdentityRestriction({ email: 'me@example.com' })).toBe(true)
+    expect(hasIdentityRestriction({ subject: 'abc-123' })).toBe(true)
   })
 
-  test('matches allowed subject exactly', () => {
-    expect(isAllowedIdentity({ subject: 'abc-123' }, { subject: 'abc-123' })).toBe(true)
-    expect(isAllowedIdentity({ subject: 'ABC-123' }, { subject: 'abc-123' })).toBe(false)
+  test('false when nothing (or only blanks) configured', () => {
+    expect(hasIdentityRestriction({})).toBe(false)
+    expect(hasIdentityRestriction({ email: '  ', subject: '' })).toBe(false)
+  })
+})
+
+describe('isAllowedEmail', () => {
+  test('matches configured email case-insensitively', () => {
+    expect(isAllowedEmail('Me@Example.com', 'me@example.com')).toBe(true)
   })
 
-  test('either email or subject match is enough', () => {
-    expect(
-      isAllowedIdentity(
-        { email: 'me@example.com', subject: 'wrong' },
-        { email: 'me@example.com', subject: 'abc-123' },
-      ),
-    ).toBe(true)
+  test('rejects mismatch or missing email when configured', () => {
+    expect(isAllowedEmail('other@example.com', 'me@example.com')).toBe(false)
+    expect(isAllowedEmail(null, 'me@example.com')).toBe(false)
+    expect(isAllowedEmail('', 'me@example.com')).toBe(false)
   })
 
-  test('rejects non-matching identity', () => {
-    expect(
-      isAllowedIdentity({ email: 'other@example.com' }, { email: 'me@example.com' }),
-    ).toBe(false)
+  test('passes when no email constraint configured', () => {
+    expect(isAllowedEmail('anyone@example.com', '')).toBe(true)
+    expect(isAllowedEmail('anyone@example.com', null)).toBe(true)
+  })
+})
+
+describe('isAllowedSubject', () => {
+  test('matches configured subject exactly', () => {
+    expect(isAllowedSubject('abc-123', 'abc-123')).toBe(true)
+    expect(isAllowedSubject('ABC-123', 'abc-123')).toBe(false)
   })
 
-  test('fails closed when nothing is configured', () => {
-    expect(isAllowedIdentity({ email: 'me@example.com', subject: 'abc' }, {})).toBe(false)
-    expect(isAllowedIdentity({ email: '', subject: '' }, { email: '', subject: '' })).toBe(
-      false,
-    )
+  test('rejects missing subject when configured', () => {
+    expect(isAllowedSubject(null, 'abc-123')).toBe(false)
+  })
+
+  test('passes when no subject constraint configured', () => {
+    expect(isAllowedSubject('anything', '')).toBe(true)
+    expect(isAllowedSubject(null, undefined)).toBe(true)
   })
 })
 
