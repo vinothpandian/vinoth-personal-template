@@ -1,5 +1,5 @@
 import { createCliRenderer } from '@opentui/core'
-import { createRoot, useKeyboard } from '@opentui/react'
+import { createRoot, useKeyboard, useRenderer } from '@opentui/react'
 import type { HealthStatus } from '@template/contracts'
 import { useCallback, useEffect, useState } from 'react'
 import { createApiClient } from './client'
@@ -24,8 +24,15 @@ function HealthView() {
     void refresh()
   }, [refresh])
 
+  const renderer = useRenderer()
+
   useKeyboard((key) => {
-    if (key.name === 'q' || (key.ctrl && key.name === 'c')) process.exit(0)
+    // destroy() restores the terminal (alternate screen, mouse tracking,
+    // cursor) — exiting without it leaves the terminal corrupted.
+    if (key.name === 'q') {
+      renderer.destroy()
+      process.exit(0)
+    }
     if (key.name === 'r') void refresh()
   })
 
@@ -56,6 +63,16 @@ function HealthView() {
 }
 
 export async function runTui(): Promise<void> {
-  const renderer = await createCliRenderer()
+  // exitOnCtrlC makes OpenTUI call renderer.destroy() on Ctrl+C; every
+  // other exit path must destroy the renderer itself.
+  const renderer = await createCliRenderer({ exitOnCtrlC: true })
+
+  const shutdown = () => {
+    renderer.destroy()
+    process.exit(0)
+  }
+  process.on('SIGINT', shutdown)
+  process.on('SIGTERM', shutdown)
+
   createRoot(renderer).render(<HealthView />)
 }
