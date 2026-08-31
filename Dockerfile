@@ -38,5 +38,11 @@ COPY --from=builder /app/packages/db/migrations ./migrations
 COPY --from=builder /out/migrate ./migrate
 
 EXPOSE 3000
+
+# Readiness for Coolify: any HTTP reply on / (307 -> /login unauthenticated)
+# means the server is up. bun is the only runtime in the slim image.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD bun -e "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
+
 # Apply pending migrations, then serve. PORT is respected by nitro.
 CMD ["sh", "-c", "./migrate && exec bun .output/server/index.mjs"]
