@@ -77,6 +77,10 @@ All documented with placeholders in [.env.example](.env.example):
 
 ## Commands
 
+With [just](https://just.systems) installed, `just` lists every recipe — it loads `.env` automatically, so `just status`, `just tui`, `just migrate`, `just psql`, and `just verify` need no manual exports. First-time setup is `just setup`; `just check` runs typecheck + lint + test + build.
+
+The underlying bun scripts:
+
 | Command | What it does |
 | --- | --- |
 | `bun install` | install all workspaces |
