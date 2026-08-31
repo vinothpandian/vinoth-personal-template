@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# secrets and local env
+.env
+.env.*
+!.env.example
+
+# build output
+dist/
+build/
+.output/
+.nitro/
+.tanstack/
+.vite/
+*.tsbuildinfo
+
+# local databases and dumps
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+
+# logs and OS noise
+*.log
+.DS_Store
