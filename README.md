@@ -124,10 +124,11 @@ Then add the production callback URL to the Pocket ID client: `https://app.examp
 
 The CLI compiles to a single self-contained binary (no bun/node needed on the target).
 
-**Quick install (Linux x64):** CI publishes the binary as a GitHub release asset on every `v*` tag. On the target machine:
+**Quick install (Linux x64):** CI publishes the binary as a GitHub release asset on every `v*` tag. On the target machine (`gh auth login` first — the repo is private):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/vinothpandian/vinoth-personal-template/main/install.sh | bash
+gh api repos/vinothpandian/vinoth-personal-template/contents/install.sh \
+  -H "Accept: application/vnd.github.raw" | bash
 ```
 
 It downloads `pt-cli` to `/usr/local/bin` (or `~/.local/bin`), prompts for `API_URL` and `WORKER_TOKEN`, and appends them as exports to `~/.zshenv` or `~/.bashrc`. Pre-set those env vars to skip the prompts.

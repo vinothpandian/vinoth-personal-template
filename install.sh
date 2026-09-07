@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Install the personal-template CLI on Linux.
 #
-#   curl -fsSL https://raw.githubusercontent.com/vinothpandian/vinoth-personal-template/main/install.sh | bash
+#   gh api repos/vinothpandian/vinoth-personal-template/contents/install.sh \
+#     -H "Accept: application/vnd.github.raw" | bash
 #
+# Requires `gh auth login` (repo is private — curl/raw URLs 404).
 # Downloads the latest release binary, then stores API_URL + WORKER_TOKEN as
 # exports in your shell env file. Set those as env vars beforehand to skip the
 # prompts (useful for non-interactive installs).
@@ -15,7 +17,9 @@ if [ "$(uname -s)" != "Linux" ] || [ "$(uname -m)" != "x86_64" ]; then
 fi
 
 REPO="vinothpandian/vinoth-personal-template"
-URL="https://github.com/$REPO/releases/latest/download/pt-cli"
+
+command -v gh >/dev/null || { echo "Install gh: https://cli.github.com" >&2; exit 1; }
+gh auth status >/dev/null 2>&1 || { echo "Run: gh auth login" >&2; exit 1; }
 
 # --- download -------------------------------------------------------------
 BIN_DIR="/usr/local/bin"
@@ -23,7 +27,7 @@ BIN_DIR="/usr/local/bin"
 mkdir -p "$BIN_DIR"
 
 echo "Downloading pt-cli -> $BIN_DIR/pt-cli"
-curl -fSL "$URL" -o "$BIN_DIR/pt-cli"
+gh release download --repo "$REPO" --pattern pt-cli --dir "$BIN_DIR"
 chmod +x "$BIN_DIR/pt-cli"
 
 case ":$PATH:" in
